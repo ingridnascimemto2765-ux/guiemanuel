@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Avaliação Premium - Gui Emanuel</title>
+    
+    <!-- Fonte Inter (Premium & Limpa) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        dark: {
+                            900: '#050507', // Fundo super escuro
+                            800: '#0a0a0f',
+                            card: 'rgba(20, 20, 25, 0.6)', // Glassmorphism base
+                        },
+                        brand: {
+                            green: '#00D856', // Verde conversão
+                            glow: 'rgba(0, 216, 86, 0.4)',
+                        }
+                    },
+                    animation: {
+                        'blob': 'blob 7s infinite',
+                        'pulse-fast': 'pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    },
+                    keyframes: {
+                        blob: {
+                            '0%': { transform: 'translate(0px, 0px) scale(1)' },
+                            '33%': { transform: 'translate(30px, -50px) scale(1.1)' },
+                            '66%': { transform: 'translate(-20px, 20px) scale(0.9)' },
+                            '100%': { transform: 'translate(0px, 0px) scale(1)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- CSS Customizado para Glassmorphism e Efeitos Avançados -->
+    <style>
+        body {
+            background-color: #050507;
+            color: #ffffff;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Ambient Background Glows */
+        .glow-bg {
+            position: fixed;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(0, 216, 86, 0.15) 0%, rgba(0,0,0,0) 70%);
+            border-radius: 50%;
+            top: -200px;
+            right: -200px;
+            z-index: -1;
+            filter: blur(60px);
+        }
+        
+        .glow-bg-2 {
+            position: fixed;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(29, 78, 216, 0.1) 0%, rgba(0,0,0,0) 70%);
+            border-radius: 50%;
+            bottom: -100px;
+            left: -150px;
+            z-index: -1;
+            filter: blur(60px);
+        }
+
+        /* Glassmorphism Classes */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        .glass-panel {
+            background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.01) 100%);
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+
+        /* Transições de Tela */
+        .screen {
+            display: none;
+            opacity: 0;
+            transform: translateY(20px) scale(0.98);
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .screen.active {
+            display: flex;
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+
+        /* Botão Premium Pulsante */
+        .btn-premium {
+            background: linear-gradient(135deg, #00D856 0%, #00b347 100%);
+            box-shadow: 0 0 20px rgba(0, 216, 86, 0.3), inset 0 -2px 0 rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-premium:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 216, 86, 0.4), inset 0 -2px 0 rgba(0,0,0,0.1);
+        }
+
+        /* Opções do Quiz */
+        .quiz-option {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .quiz-option:hover {
+            background: rgba(0, 216, 86, 0.05);
+            border-color: rgba(0, 216, 86, 0.5);
+            transform: translateX(5px);
+        }
+
+        .quiz-option.selected {
+            background: rgba(0, 216, 86, 0.1);
+            border-color: #00D856;
+            box-shadow: 0 0 15px rgba(0, 216, 86, 0.2);
+        }
+
+        /* Spinner Premium */
+        .modern-spinner {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-top-color: #00D856;
+            animation: spin 1s cubic-bezier(0.6, 0.2, 0.4, 0.8) infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center p-4 sm:p-6 relative selection:bg-brand-green selection:text-black">
+
+    <!-- Efeitos de Fundo -->
+    <div class="glow-bg animate-blob"></div>
+    <div class="glow-bg-2 animate-blob" style="animation-delay: 2s;"></div>
+
+    <!-- CONTAINER PRINCIPAL -->
+    <main class="w-full max-w-2xl mx-auto relative z-10">
+
+        <!-- TELA 1: INTRODUÇÃO -->
+        <section id="screen-intro" class="screen active flex-col gap-6">
+            
+            <div class="glass-card rounded-3xl p-8 sm:p-12 text-center relative overflow-hidden">
+                <!-- Badges Superiores -->
+                <div class="flex justify-center mb-6">
+                    <span class="px-4 py-1.5 rounded-full border border-brand-green/30 bg-brand-green/10 text-brand-green text-xs font-semibold tracking-wide uppercase flex items-center gap-2 shadow-[0_0_10px_rgba(0,216,86,0.2)]">
+                        <span class="w-2 h-2 rounded-full bg-brand-green animate-pulse"></span>
+                        Análise de Perfil
+                    </span>
+                </div>
+
+                <h1 class="text-3xl sm:text-5xl font-extrabold mb-6 leading-[1.1] tracking-tight text-white">
+                    Descubra se você tem o <br/>
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-green to-emerald-300 filter drop-shadow-[0_0_8px_rgba(0,216,86,0.4)]">Perfil Exato</span> para lucrar na internet.
+                </h1>
+                
+                <p class="text-gray-400 text-lg mb-8 max-w-md mx-auto font-light">
+                    Responda 5 perguntas rápidas e descubra como criar um negócio online lucrativo com produtos Low Ticket.
+                </p>
+
+                <button onclick="startQuiz()" class="btn-premium w-full sm:w-auto mx-auto text-black font-bold text-lg py-4 px-10 rounded-2xl flex items-center justify-center gap-3 animate-pulse-fast">
+                    INICIAR AVALIAÇÃO AGORA
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                </button>
+                <p class="text-gray-500 text-xs mt-4 font-medium flex items-center justify-center gap-1">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    Leva menos de 1 minuto
+                </p>
+            </div>
+
+            <!-- Card: Quem é Gui Emanuel -->
+            <div class="glass-panel rounded-2xl p-6 flex flex-col sm:flex-row items-center sm:items-start gap-6 relative overflow-hidden group">
+                <!-- Efeito Hover no Card -->
+                <div class="absolute inset-0 bg-gradient-to-r from-brand-green/0 via-brand-green/5 to-brand-green/0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"></div>
+                
+                <!-- Imagem com Borda Gradiente Premium -->
+                <div class="relative shrink-0">
+                    <div class="absolute inset-0 bg-gradient-to-tr from-brand-green to-blue-500 rounded-full animate-spin" style="animation-duration: 4s; padding: 2px;"></div>
+                    <img src="https://i.ytimg.com/vi/PI3WJh7Vx-4/hq720.jpg?sqp=-oaymwEhCK4FEIIDSFryq4qpAxMIARUAAAAAGAElAADIQj0AgKJD&rs=AOn4CLCPHxuX6iH0e37cCIznsxCRTEjk3g" alt="Gui Emanuel" class="relative w-20 h-20 rounded-full object-cover border-2 border-dark-900 z-10 bg-dark-900" style="object-position: center 20%;">
+                </div>
+                
+                <div class="text-center sm:text-left z-10">
+                    <h3 class="text-white font-bold text-xl mb-1 flex items-center justify-center sm:justify-start gap-2">
+                        Quem é Gui Emanuel?
+                        <svg class="w-5 h-5 text-blue-400" fill="currentColor" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    </h3>
+                    <p class="text-gray-400 text-sm leading-relaxed">
+                        Trabalho há quase <strong class="text-white font-semibold">10 anos no marketing digital</strong>. Minha missão aqui é quebrar todos os seus medos e te mostrar o caminho exato para viver da internet vendendo produtos Low Ticket todos os dias.
+                    </p>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- TELA 2: QUIZ -->
+        <section id="screen-quiz" class="screen flex-col">
+            <div class="glass-card rounded-3xl p-6 sm:p-10 border border-white/10">
+                
+                <!-- Header do Quiz -->
+                <div class="mb-8">
+                    <div class="flex justify-between items-end mb-3">
+                        <div>
+                            <span class="text-gray-400 text-xs font-semibold uppercase tracking-wider block mb-1">Progresso</span>
+                            <span class="text-white font-bold text-lg" id="progress-text">Questão 1 de 5</span>
+                        </div>
+                        <span class="text-brand-green font-bold text-xl" id="progress-percentage">0%</span>
+                    </div>
+                    <!-- Barra de Progresso Avançada -->
+                    <div class="w-full bg-white/5 rounded-full h-1.5 overflow-hidden">
+                        <div id="progress-bar" class="bg-gradient-to-r from-brand-green to-emerald-400 h-full rounded-full transition-all duration-700 shadow-[0_0_10px_rgba(0,216,86,0.5)]" style="width: 20%"></div>
+                    </div>
+                </div>
+
+                <!-- Container da Pergunta Atual -->
+                <div id="question-container" class="transition-all duration-300">
+                    <h2 id="question-title" class="text-2xl sm:text-3xl font-bold mb-8 text-white leading-tight">
+                        <!-- Título injetado via JS -->
+                    </h2>
+
+                    <div id="options-container" class="flex flex-col gap-4">
+                        <!-- Botões injetados via JS -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TELA 3: CARREGAMENTO & ANÁLISE -->
+        <section id="screen-loading" class="screen flex-col items-center justify-center">
+            <div class="glass-card rounded-3xl p-12 text-center w-full max-w-md mx-auto border border-white/10">
+                <div class="flex justify-center mb-8">
+                    <div class="modern-spinner"></div>
+                </div>
+                <h2 class="text-2xl font-bold mb-6 text-white tracking-tight">Analisando seu perfil...</h2>
+                
+                <div class="space-y-4 text-left w-full mx-auto" id="loading-steps">
+                    <!-- Steps injetados via JS para animação -->
+                </div>
+            </div>
+        </section>
+
+        <!-- TELA 4: RESULTADO SUCESSO -->
+        <section id="screen-result" class="screen flex-col items-center justify-center">
+            <div class="glass-card rounded-3xl p-8 sm:p-12 text-center w-full border border-brand-green/30 relative overflow-hidden">
+                <!-- Glow verde forte no fundo do card -->
+                <div class="absolute inset-0 bg-brand-green/5"></div>
+
+                <div class="relative z-10">
+                    <div class="w-20 h-20 mx-auto bg-brand-green/20 rounded-full flex items-center justify-center mb-6 border border-brand-green/50 shadow-[0_0_30px_rgba(0,216,86,0.3)]">
+                        <svg class="w-10 h-10 text-brand-green" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                    </div>
+                    
+                    <h2 class="text-3xl sm:text-4xl font-extrabold mb-4 text-white">Perfil <span class="text-brand-green">Aprovado!</span></h2>
+                    
+                    <p class="text-gray-300 text-lg mb-8 leading-relaxed max-w-md mx-auto">
+                        Você tem o mindset exato necessário para aplicar o método. Seu próximo passo é liberar o acesso ao material onde mostro como faturar com Low Ticket.
+                    </p>
+
+                    <a href="https://advogadabc.com" class="btn-premium block w-full text-black font-extrabold text-lg py-5 px-8 rounded-2xl shadow-[0_0_40px_rgba(0,216,86,0.4)] animate-pulse-fast hover:scale-105 transition-transform duration-300">
+                        ACESSAR MÉTODO AGORA
+                    </a>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Rodapé -->
+    <footer class="mt-8 text-center text-gray-600 text-xs pb-6 z-10 relative">
+        <p>&copy; 2026 Gui Emanuel. Todos os direitos reservados.</p>
+        <p class="mt-2 text-gray-700">Este site não é afiliado ao Facebook ou a qualquer entidade do Facebook.</p>
+    </footer>
+
+    <!-- Lógica do App -->
+    <script>
+        // Banco de perguntas focadas em quebrar objeções
+        const questions = [
+            {
+                title: "Quanto tempo você tem disponível por dia para aplicar um método validado?",
+                options: [
+                    "1 a 2 horas por dia (Ideal para começar)",
+                    "Mais de 3 horas por dia (Excelente!)",
+                    "Pouco tempo, mas quero organizar para mudar de vida"
+                ]
+            },
+            {
+                title: "Você se sente confortável gravando vídeos ou prefere atuar nos bastidores?",
+                options: [
+                    "Prefiro não aparecer (Método anônimo)",
+                    "Não vejo problema em aparecer e gravar conteúdo",
+                    "Tenho vergonha, mas faria se me gerasse lucros reais"
+                ]
+            },
+            {
+                title: "Qual é o seu nível atual de experiência com vendas na internet?",
+                options: [
+                    "Nunca vendi nada (Vou aprender o jeito certo)",
+                    "Já tentei, mas nunca tive resultados consistentes",
+                    "Já vendo, mas quero escalar meus lucros com Low Ticket"
+                ]
+            },
+            {
+                title: "Se descobrisse como criar um negócio lucrativo com baixíssimo investimento, você:",
+                options: [
+                    "Começaria hoje mesmo, sem desculpas",
+                    "Gostaria de entender como investir pouco e lucrar rápido",
+                    "Precisaria de um passo a passo totalmente seguro"
+                ]
+            },
+            {
+                title: "Qual é o seu maior objetivo hoje ao buscar uma nova fonte de renda online?",
+                options: [
+                    "Liberdade financeira e trabalhar de qualquer lugar",
+                    "Fazer uma renda extra segura todos os meses",
+                    "Viver 100% da internet e dar uma vida melhor para minha família"
+                ]
+            }
+        ];
+
+        let currentStep = 0;
+
+        // Funções de Navegação de Telas
+        function switchScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            setTimeout(() => {
+                document.getElementById(screenId).classList.add('active');
+            }, 50); // delay sutil para trigger da transição CSS
+        }
+
+        function startQuiz() {
+            switchScreen('screen-quiz');
+            renderQuestion();
+        }
+
+        // Renderiza a pergunta atual com animações
+        function renderQuestion() {
+            const q = questions[currentStep];
+            const qContainer = document.getElementById('question-container');
+            const optionsContainer = document.getElementById('options-container');
+            
+            // Fade out
+            qContainer.style.opacity = '0';
+            qContainer.style.transform = 'translateY(10px)';
+
+            setTimeout(() => {
+                // Atualiza Textos
+                document.getElementById('question-title').innerText = q.title;
+                optionsContainer.innerHTML = '';
+
+                // Cria botões das opções
+                q.options.forEach((opt, index) => {
+                    const letters = ['A', 'B', 'C', 'D'];
+                    const btn = document.createElement('button');
+                    btn.className = `quiz-option w-full text-left p-4 sm:p-5 rounded-2xl border border-white/10 bg-white/5 
+                                     text-gray-300 font-medium group relative overflow-hidden flex items-center gap-4`;
+                    
+                    btn.innerHTML = `
+                        <div class="w-10 h-10 shrink-0 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-sm font-bold text-gray-400 group-hover:border-brand-green group-hover:text-brand-green group-hover:bg-brand-green/10 transition-colors">
+                            ${letters[index]}
+                        </div>
+                        <span class="flex-1 text-sm sm:text-base group-hover:text-white transition-colors">${opt}</span>
+                    `;
+                    
+                    btn.onclick = () => handleAnswer(btn);
+                    optionsContainer.appendChild(btn);
+                });
+
+                // Atualiza Progresso
+                const percent = (((currentStep + 1) / questions.length) * 100).toFixed(0);
+                document.getElementById('progress-bar').style.width = `${percent}%`;
+                document.getElementById('progress-text').innerText = `Questão ${currentStep + 1} de ${questions.length}`;
+                document.getElementById('progress-percentage').innerText = `${percent}%`;
+
+                // Fade in
+                qContainer.style.opacity = '1';
+                qContainer.style.transform = 'translateY(0)';
+            }, 300);
+        }
+
+        // Ação ao clicar em uma resposta
+        function handleAnswer(clickedBtn) {
+            // Estilo visual de selecionado
+            clickedBtn.classList.add('selected', 'text-white');
+            
+            // Trava outros cliques
+            const allBtns = document.getElementById('options-container').querySelectorAll('button');
+            allBtns.forEach(b => b.style.pointerEvents = 'none');
+
+            setTimeout(() => {
+                currentStep++;
+                if (currentStep < questions.length) {
+                    renderQuestion();
+                } else {
+                    finishQuiz();
+                }
+            }, 600);
+        }
+
+        // Finaliza quiz e roda animação de loading
+        function finishQuiz() {
+            switchScreen('screen-loading');
+            
+            const steps = [
+                "Verificando respostas...",
+                "Analisando perfil empreendedor...",
+                "Cruzando dados de compatibilidade...",
+                "Gerando plano de ação final..."
+            ];
+            
+            const container = document.getElementById('loading-steps');
+            container.innerHTML = '';
+
+            steps.forEach((step, index) => {
+                setTimeout(() => {
+                    const div = document.createElement('div');
+                    div.className = 'flex items-center gap-3 text-gray-400 text-sm font-medium';
+                    div.style.opacity = '0';
+                    div.style.transform = 'translateX(-10px)';
+                    div.style.transition = 'all 0.4s ease';
+                    
+                    div.innerHTML = `
+                        <div class="w-6 h-6 rounded-full bg-brand-green/20 flex items-center justify-center shrink-0">
+                            <svg class="w-3.5 h-3.5 text-brand-green" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                        </div>
+                        ${step}
+                    `;
+                    
+                    container.appendChild(div);
+                    
+                    // Trigger fade in
+                    setTimeout(() => {
+                        div.style.opacity = '1';
+                        div.style.transform = 'translateX(0)';
+                    }, 50);
+                    
+                }, index * 900); // Adiciona cada passo a cada 0.9s
+            });
+
+            // Vai para tela de sucesso após finalizar os steps
+            setTimeout(() => {
+                switchScreen('screen-result');
+            }, (steps.length * 900) + 1000);
+        }
+    </script>
+</body>
+</html>
